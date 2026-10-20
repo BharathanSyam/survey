@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Survey</title>
+<meta name="theme-color" content="#0B7A6C">
+<meta name="robots" content="noindex">
+<link rel="icon" href="v1/icon.svg">
+<link rel="stylesheet" href="v1/app.css">
+</head>
+<body>
+<!-- Shared entry page. Each study normally has its own page (e.g. cb01.html);
+     this one is used for Preview links: index.html?api=<web app URL>&preview=<key> -->
+<div id="app"><div class="boot">Loading…</div></div>
+<script>
+  window.SURVEY = {};
+  if (!/[?&]api=/.test(location.search)) {
+    document.getElementById('app').innerHTML = '<div class="boot">This is the survey site. Please use the link you were sent.</div>';
+  }
+</script>
+<script>if (/[?&]api=/.test(location.search)) { var s = document.createElement('script'); s.src = 'v1/app.js'; document.body.appendChild(s); }</script>
+</body>
+</html>
