@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR code</title>
+<link rel="icon" href="v1/icon.svg">
+<style>
+  :root { --primary:#1F6B45; --text:#17301F; --muted:#456050; --border:#B3D5BF; --bg:#E6F4EA; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+  main { max-width: 560px; margin: 0 auto; padding: 28px 16px 40px; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:24px; text-align:center; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .link { color: var(--muted); font-size: .9rem; word-break: break-all; margin: 8px 0 18px; }
+  canvas { width: 100%; max-width: 360px; height: auto; image-rendering: pixelated; border-radius: 8px; }
+  .row { display:flex; gap:10px; margin-top:18px; }
+  button, .btn { flex:1; min-height:48px; border-radius:12px; border:0; background:var(--primary); color:#fff; font-weight:600; font-size:1rem; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; }
+  .outline { background:#fff; color:var(--primary); border:1.5px solid var(--primary); }
+  .make { margin-top: 22px; text-align:left; }
+  .make label { font-weight:600; display:block; margin-bottom:6px; }
+  .make input { width:100%; min-height:48px; border:1.5px solid var(--border); border-radius:12px; padding:10px 14px; font-size:1rem; }
+  .err { color:#B42318; margin-top:10px; }
+  @media print { body { background:#fff; } .noprint { display:none !important; } .card { border:0; } canvas { max-width: 80mm; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1 id="title">QR code</h1>
+    <div class="link" id="link"></div>
+    <canvas id="c" aria-label="QR code"></canvas>
+    <div class="row noprint"><button id="dl">Download PNG</button><button class="outline" onclick="window.print()">Print</button></div>
+    <div id="err" class="err"></div>
+  </div>
+  <div class="make noprint">
+    <label for="u">Make a QR code for another link</label>
+    <input id="u" placeholder="https://..." inputmode="url">
+  </div>
+</main>
+<script src="v1/qr.js"></script>
+<script>
+  var p = new URLSearchParams(location.search), canvas = document.getElementById('c');
+  function draw(u, title) {
+    document.getElementById('err').textContent = '';
+    document.getElementById('link').textContent = u || 'Add ?u=<your link> to the address, or type a link below.';
+    if (title) { document.getElementById('title').textContent = title; document.title = 'QR · ' + title; }
+    if (!u) { canvas.width = canvas.height = 0; return; }
+    try { QR.toCanvas(u, canvas, 12); } catch (e) { document.getElementById('err').textContent = e.message; }
+  }
+  draw(p.get('u') || '', p.get('t') || '');
+  document.getElementById('u').addEventListener('input', function (e) { draw(e.target.value.trim(), ''); });
+  document.getElementById('dl').addEventListener('click', function () {
+    var a = document.createElement('a'); a.href = canvas.toDataURL('image/png');
+    var src = /[?&]src=([^&]+)/.exec(document.getElementById('link').textContent);
+    a.download = 'qr' + (src ? '-' + src[1] : '') + '.png'; a.click();
+  });
+</script>
+</body>
+</html>
